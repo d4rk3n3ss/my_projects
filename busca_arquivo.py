@@ -9,11 +9,11 @@ class Funcoes():
         lista =os.listdir(self.entr_caminho.get())
         elemento =self.entr_busca.get()
         valida = (elemento in lista)
-      #  indice = lista.index(elemento)  falta ajustar esta parte
-      #  if valida == True:
-      #      self.lb_mostra.
-
-
+        indice = lista.index(elemento)
+        if valida ==True:
+            self.lb_mostra['text']=str(indice)+('  -  ')+(elemento)
+        elif valida==False:
+            self.lb_mostra['Arquivo nao esta no diretorio']
 class Aplicacao(Funcoes):
     def __init__(self):
         self.root=root
@@ -36,8 +36,8 @@ class Aplicacao(Funcoes):
         self.entr_caminho=Entry(self.Main)
         self.entr_caminho.place(relx=0.01, rely=0.16, relwidth=0.50, relheight=0.08)
 
-        self.lb_mostra(self.Main)
-        self.lb_mostra.place(relx=0.01, rely=0.30, relwidth=0.98, relheight=0.75)
+        self.lb_mostra=Label(self.Main,text='Resultado')
+        self.lb_mostra.place(relx=0.01, rely=0.30, relwidth=0.98, relheight=0.70)
 
         self.entr_busca=Entry(self.Main)
         self.entr_busca.place(relx=0.55, rely=0.16,relwidth=0.30, relheight=0.08)
