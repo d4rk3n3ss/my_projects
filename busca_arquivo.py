@@ -9,12 +9,17 @@ class Funcoes():
         lista =os.listdir(self.entr_caminho.get())
         elemento =self.entr_busca.get()
         valida = (elemento in lista)
-        indice = lista.index(elemento)
-        if valida ==True:
-            self.lb_mostra['text']=str(indice)+('  -  ')+(elemento)
-            self.entr_caminho.delete(0,END)
-            self.entr_busca.delete(0,END)
+        if valida ==False:
+            self.lb_mostra['text']=('Arquivo nao localizado no diretorio')
 
+        indice = lista.index(elemento)
+        try:
+            if valida ==True:
+                self.lb_mostra['text']=str(indice)+('  -  ')+(elemento)
+                self.entr_caminho.delete(0,END)
+                self.entr_busca.delete(0,END)
+        except:
+            self.lb_mostra['text'] = ('Verifque os se os dados digitados estao corretos')
 
 class Aplicacao(Funcoes):
     def __init__(self):
