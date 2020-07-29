@@ -82,14 +82,9 @@ class Funçoes():
     def Tarefas(self):
         self.conecta_bd()
         dia=self.data_e_hora=strftime('%d/%m/%Y')
-
+        print(dia)
         show=self.conn.execute('''
-       SELECT CONVERT(VARCHAR,data,103) AS Hoje, *
-        from Agendas
-        WHERE CONVERT(VARCHAR,data,103) = '?'
-
-        ''',dia)
-
+       SELECT * FROM Agendas where data like (?+?+?+?+?+?+?+?+?+?)''',(dia))
         for i in show:
             print(i)
         self.desconecta_bd()
