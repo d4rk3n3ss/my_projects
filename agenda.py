@@ -79,20 +79,28 @@ class Funçoes():
         self.bt_calendario.destroy()
         self.btsalva.destroy()
         self.cal.destroy()
+    def OnDoubleClick(self, event):
+        self.listaCli.selection()
+
+        for n in self.listaCli.selection():
+            col1,col2, col3, col4,col5 = self.listaCli.item(n, 'values')
+            self.entrynome.insert(END, col2)
+            self.entrytele.insert(END, col3)
+            self.entrydata.insert(END, col4)
+            self.entryhora.insert(END, col5)
     def Tarefas(self):
+        self.listaCli.delete(*self.listaCli.get_children())
         self.conecta_bd()
         dia=self.data_e_hora=strftime('%d/%m/%Y')
-        print(dia)
-        show=self.conn.execute('''
-       SELECT * FROM Agendas where data like (?+?+?+?+?+?+?+?+?+?)''',(dia))
-        for i in show:
-            print(i)
+        lista=self.conn.execute('''
+       SELECT * FROM Agendas where data like ('%s')ORDER BY NOME_CLIENTE ASC'''% dia)
+        for i in lista:
+            self.listaCli.insert("", END, values=i)
         self.desconecta_bd()
     def VerMes(self):
         print('Exibindo')
     def Notas(self):
         print('Atualizando')
-
 class Aplicacao(Funçoes):
     def __init__(self):
         self.root=root
@@ -100,6 +108,7 @@ class Aplicacao(Funçoes):
         self.Frame()
         self.Widget()
         self.Menus()
+        self.lista_frame()
         root.mainloop()
     def Tela(self):
         self.root.title('Agenda')
@@ -117,7 +126,7 @@ class Aplicacao(Funçoes):
         self.stylo=ttk.Style()
         self.stylo.configure('Bw.TButton',image=self.bt_imgagn,background='white',foreground='white',bordercolor='white')
         self.Bt_Novo=ttk.Button(self.Main,style='Bw.TButton',command=self.Agendar)
-        self.Bt_Novo.place(relx=0.10, rely=0.10,relwidth=0.10,relheight=0.15)
+        self.Bt_Novo.place(relx=0.01, rely=0.10,relwidth=0.10,relheight=0.15)
         self.Bt_Novo.configure(image=self.bt_imgagn)
 
         self.bt_imgtaref=PhotoImage(file='tarefas.png')
@@ -125,7 +134,7 @@ class Aplicacao(Funçoes):
         self.stylo=ttk.Style()
         self.stylo.configure('Bw.TButton',image=self.bt_imgtaref)
         self.Bt_tarefa =ttk.Button(self.Main,command=self.Tarefas)
-        self.Bt_tarefa.place(relx=0.10, rely=0.35,relwidth=0.10,relheight=0.15)
+        self.Bt_tarefa.place(relx=0.01, rely=0.35,relwidth=0.10,relheight=0.15)
         self.Bt_tarefa.configure(image=self.bt_imgtaref)
 
         self.bt_imgmes=PhotoImage(file='mes.png')
@@ -133,7 +142,7 @@ class Aplicacao(Funçoes):
         self.stylo=ttk.Style()
         self.stylo.configure('Bw.TButton',image=self.bt_imgmes)
         self.Bt_exibe=ttk.Button(self.Main,command=self.VerMes)
-        self.Bt_exibe.place(relx=0.10, rely=0.60,relwidth=0.10,relheight=0.15)
+        self.Bt_exibe.place(relx=0.01, rely=0.60,relwidth=0.10,relheight=0.15)
         self.Bt_exibe.configure(image=self.bt_imgmes)
 
         self.lb_relogio = Label(self.Main,background='white',font = ('verdana',12))
@@ -154,5 +163,25 @@ class Aplicacao(Funçoes):
         manubar.add_cascade(label='Opçoes',menu=Menu1)
         Menu1.add_command(label='Notas da atualizaçao',command=self.Notas)
         Menu1.add_command(label='Sair',command=Quit)
+    def lista_frame(self):
+        self.listaCli = ttk.Treeview(self.Main, height=3,
+                                     column=("col1", "col2", "col3", "col4","col5"))
+        self.listaCli.heading("#0",text="")
+        self.listaCli.heading("#1", text="Codigo")
+        self.listaCli.heading("#2", text="Nome")
+        self.listaCli.heading("#3", text="Telefone")
+        self.listaCli.heading("#4", text="DATA")
+        self.listaCli.heading("#5", text="HORA")
+        self.listaCli.column("#0",width=0)
+        self.listaCli.column("#1", width=1)
+        self.listaCli.column("#2", width=200)
+        self.listaCli.column("#3", width=100)
+        self.listaCli.column("#4", width=100)
+        self.listaCli.column("#5", width=50)
+        self.listaCli.place(relx=0.15, rely=0.40, relwidth=0.80, relheight=0.40)
 
+        self.scroolLista = Scrollbar(self.Main, orient='vertical')
+        self.listaCli.configure(yscroll=self.scroolLista.set)
+        self.scroolLista.place(relx=0.96, rely=0.1, relwidth=0.04, relheight=0.85)
+        self.listaCli.bind("<Double-1>", self.OnDoubleClick)
 Aplicacao()
