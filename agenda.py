@@ -30,35 +30,35 @@ class Funçoes():
         self.desconecta_bd()
     def Calendario(self):
         self.cal=Calendar(self.Main,fg='black',locale='pt_br')
-        self.cal.place(relx=0.55, rely=0.30)
-        self.btsalva=Button(self.Main,text='Salvar',command=self.Salvar)
-        self.btsalva.place(relx=0.45, rely=0.45)
+        self.cal.place(relx=0.66, rely=0.01)
+        self.btsalva=Button(self.Main,text='Salvar',command=self.Salvar,bg='#00FF7F')
+        self.btsalva.place(relx=0.66, rely=0.33,relwidth=0.32)
     def Agendar(self):
         self.conecta_bd()
         self.montaTabelas()
         self.entrynome=Entry(self.Main)
-        self.entrynome.place(relx=0.40, rely=0.10,relwidth=0.40)
+        self.entrynome.place(relx=0.25, rely=0.10,relwidth=0.40)
         self.lbnome=Label(self.Main,text='Nome',background='white')
-        self.lbnome.place(relx=0.30, rely=0.10)
+        self.lbnome.place(relx=0.15, rely=0.10)
 
         self.entrytele=Entry(self.Main)
-        self.entrytele.place(relx=0.40, rely=0.20, relwidth=0.40)
+        self.entrytele.place(relx=0.25, rely=0.20, relwidth=0.40)
         self.lbtele = Label(self.Main, text='Telefone', background='white')
-        self.lbtele.place(relx=0.30, rely=0.20)
+        self.lbtele.place(relx=0.15, rely=0.20)
 
         self.entryhora=Entry(self.Main)
-        self.entryhora.place(relx=0.40, rely=0.30, relwidth=0.05)
+        self.entryhora.place(relx=0.25, rely=0.30, relwidth=0.05)
         self.lbhora=Label(self.Main,text='Hora',background='white')
-        self.lbhora.place(relx=0.30, rely=0.30)
+        self.lbhora.place(relx=0.15, rely=0.30)
 
         self.entrydata=Entry(self.Main)
-        self.entrydata.place(relx=0.55, rely=0.30,relwidth=0.12)
+        self.entrydata.place(relx=0.40, rely=0.30,relwidth=0.10)
         self.lbdata=Label(self.Main,text='Data',background='white')
-        self.lbdata.place(relx=0.50, rely=0.30)
+        self.lbdata.place(relx=0.35, rely=0.30)
 
 
         self.bt_calendario=Button(self.Main,text='Calendario',command=self.Calendario)
-        self.bt_calendario.place(relx=0.70, rely=0.30)
+        self.bt_calendario.place(relx=0.55, rely=0.30)
     def Salvar(self):
         dataini=self.cal.get_date()
         self.entrydata.delete(0,END)
@@ -79,6 +79,7 @@ class Funçoes():
         self.bt_calendario.destroy()
         self.btsalva.destroy()
         self.cal.destroy()
+        self.Tarefas()
     def OnDoubleClick(self, event):
         self.listaCli.selection()
 
@@ -98,7 +99,15 @@ class Funçoes():
             self.listaCli.insert("", END, values=i)
         self.desconecta_bd()
     def VerMes(self):
-        print('Exibindo')
+        self.listaCli.delete(*self.listaCli.get_children())
+        self.conecta_bd()
+        meses = self.data_e_hora = strftime('/%m/%Y')
+        mes=('%')+meses
+        lista = self.conn.execute('''
+        SELECT * FROM Agendas where data like ('%s')ORDER BY data ASC''' % mes)
+        for i in lista:
+            self.listaCli.insert("", END, values=i)
+        self.desconecta_bd()
     def Notas(self):
         print('Atualizando')
 class Aplicacao(Funçoes):
@@ -113,14 +122,14 @@ class Aplicacao(Funçoes):
     def Tela(self):
         self.root.title('Agenda')
         self.root.configure(background='black')
-        self.root.geometry('700x500')
+        self.root.geometry('800x600')
         self.root.resizable(False,False)
     def Frame(self):
         self.Main=Frame(self.root,bg= 'white',highlightbackground='black')
         self.Main.place(relx= 0.01, rely=0.01, relwidth= 0.98, relheight=0.98)
+        self.Main1=Frame(self.root,bg= 'black')
+        self.Main1.place(relx= 0.15, rely=0.40, relwidth= 0.80, relheight=0.45)
     def Widget(self):
-
-
         self.bt_imgagn=PhotoImage(file='agenda.png')
         self.bt_imgagn=self.bt_imgagn.subsample(4,4)
         self.stylo=ttk.Style()
@@ -163,25 +172,26 @@ class Aplicacao(Funçoes):
         manubar.add_cascade(label='Opçoes',menu=Menu1)
         Menu1.add_command(label='Notas da atualizaçao',command=self.Notas)
         Menu1.add_command(label='Sair',command=Quit)
+
     def lista_frame(self):
-        self.listaCli = ttk.Treeview(self.Main, height=3,
+        self.listaCli = ttk.Treeview(self.Main1, height=3,
                                      column=("col1", "col2", "col3", "col4","col5"))
         self.listaCli.heading("#0",text="")
-        self.listaCli.heading("#1", text="Codigo")
-        self.listaCli.heading("#2", text="Nome")
-        self.listaCli.heading("#3", text="Telefone")
+        self.listaCli.heading("#1", text="C")
+        self.listaCli.heading("#2", text="NOME")
+        self.listaCli.heading("#3", text="TELEFONE")
         self.listaCli.heading("#4", text="DATA")
         self.listaCli.heading("#5", text="HORA")
         self.listaCli.column("#0",width=0)
-        self.listaCli.column("#1", width=1)
-        self.listaCli.column("#2", width=200)
-        self.listaCli.column("#3", width=100)
-        self.listaCli.column("#4", width=100)
-        self.listaCli.column("#5", width=50)
-        self.listaCli.place(relx=0.15, rely=0.40, relwidth=0.80, relheight=0.40)
+        self.listaCli.column("#1", width=0)
+        self.listaCli.column("#2", width=40)
+        self.listaCli.column("#3", width=10)
+        self.listaCli.column("#4", width=10)
+        self.listaCli.column("#5", width=10)
+        self.listaCli.place(relx=0.0001, rely=0.001, relwidth=0.96, relheight=1)
 
-        self.scroolLista = Scrollbar(self.Main, orient='vertical')
+        self.scroolLista = Scrollbar(self.Main1, orient='vertical')
         self.listaCli.configure(yscroll=self.scroolLista.set)
-        self.scroolLista.place(relx=0.96, rely=0.1, relwidth=0.04, relheight=0.85)
+        self.scroolLista.place(relx=0.96, rely=0.001, relwidth=0.04, relheight=1)
         self.listaCli.bind("<Double-1>", self.OnDoubleClick)
 Aplicacao()
