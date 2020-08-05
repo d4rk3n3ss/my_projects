@@ -8,7 +8,24 @@ from tkcalendar import Calendar,DateEntry
 
 root=Tk()
 
-class Funçoes():
+class Validadores():
+    def ValidaHora(self,text):
+        if text=="": return True
+        try:
+            value=int(text)
+        except ValueError:
+            return False
+        return 0 <= value <=10000
+
+    def ValidaTele(self,text):
+        if text=="":return True
+        try:
+            value=int(text)
+        except (ValueError):
+            return False
+        return 0 <= value <=1000000000
+
+class Funçoes(Validadores):
     def conecta_bd(self):
         self.conn = sqlite3.connect("AGENDAMENTOS.db")
         self.cursor = self.conn.cursor(); print("Conectando ao banco de dados")
@@ -41,12 +58,12 @@ class Funçoes():
         self.lbnome=Label(self.Main,text='Nome',background='white')
         self.lbnome.place(relx=0.15, rely=0.10)
 
-        self.entrytele=Entry(self.Main)
+        self.entrytele=Entry(self.Main,validate='key',validatecommand=self.vdTele)
         self.entrytele.place(relx=0.25, rely=0.20, relwidth=0.40)
         self.lbtele = Label(self.Main, text='Telefone', background='white')
         self.lbtele.place(relx=0.15, rely=0.20)
 
-        self.entryhora=Entry(self.Main)
+        self.entryhora=Entry(self.Main,validate='key',validatecommand=self.vdhora)
         self.entryhora.place(relx=0.25, rely=0.30, relwidth=0.05)
         self.lbhora=Label(self.Main,text='Hora',background='white')
         self.lbhora.place(relx=0.15, rely=0.30)
@@ -110,9 +127,13 @@ class Funçoes():
         self.desconecta_bd()
     def Notas(self):
         print('Atualizando')
-class Aplicacao(Funçoes):
+    def Validaentrada(self):
+        self.vdhora=(self.root.register(self.ValidaHora),"%P")
+        self.vdTele=(self.root.register(self.ValidaTele),"%P")
+class Aplicacao(Funçoes,Validadores):
     def __init__(self):
         self.root=root
+        self.Validaentrada()
         self.Tela()
         self.Frame()
         self.Widget()
@@ -194,4 +215,5 @@ class Aplicacao(Funçoes):
         self.listaCli.configure(yscroll=self.scroolLista.set)
         self.scroolLista.place(relx=0.96, rely=0.001, relwidth=0.04, relheight=1)
         self.listaCli.bind("<Double-1>", self.OnDoubleClick)
+
 Aplicacao()
