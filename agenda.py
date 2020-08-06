@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from time import strftime
 import sqlite3
-from tkcalendar import Calendar,DateEntry
+from tkcalendar import Calendar
 
 
 
@@ -24,7 +24,6 @@ class Validadores():
         except (ValueError):
             return False
         return 0 <= value <=1000000000
-
 class Funçoes(Validadores):
     def conecta_bd(self):
         self.conn = sqlite3.connect("AGENDAMENTOS.db")
@@ -53,6 +52,10 @@ class Funçoes(Validadores):
     def Agendar(self):
         self.conecta_bd()
         self.montaTabelas()
+
+        self.entry_cod=Entry(self.Main)
+        self.entry_cod.place(relx=0.15, rely=0.05,relwidth=0.04)
+
         self.entrynome=Entry(self.Main)
         self.entrynome.place(relx=0.25, rely=0.10,relwidth=0.40)
         self.lbnome=Label(self.Main,text='Nome',background='white')
@@ -76,6 +79,9 @@ class Funçoes(Validadores):
 
         self.bt_calendario=Button(self.Main,text='Calendario',command=self.Calendario)
         self.bt_calendario.place(relx=0.55, rely=0.30)
+
+        self.bt_altera=Button(self.Main,text='Alterar',command=self.Alteraagenda)
+        self.bt_altera.place(relx=0.65, rely=0.30)
     def Salvar(self):
         dataini=self.cal.get_date()
         self.entrydata.delete(0,END)
@@ -85,6 +91,7 @@ class Funçoes(Validadores):
         insert into Agendas (NOME_CLIENTE,TELEFONE,DATA,HORA) values (?,?,?,?)''',(self.entrynome.get(),self.entrytele.get(),self.entrydata.get(),self.entryhora.get()))
         self.conn.commit()
         self.desconecta_bd()
+        self.limpa_cliente()
         self.entrynome.destroy()
         self.lbnome.destroy()
         self.entryhora.destroy()
@@ -96,12 +103,16 @@ class Funçoes(Validadores):
         self.bt_calendario.destroy()
         self.btsalva.destroy()
         self.cal.destroy()
+        self.entry_cod.destroy()
+        self.bt_altera.destroy()
         self.Tarefas()
     def OnDoubleClick(self, event):
+        self.limpa_cliente()
         self.listaCli.selection()
 
         for n in self.listaCli.selection():
             col1,col2, col3, col4,col5 = self.listaCli.item(n, 'values')
+            self.entry_cod.insert(END, col1)
             self.entrynome.insert(END, col2)
             self.entrytele.insert(END, col3)
             self.entrydata.insert(END, col4)
@@ -115,6 +126,7 @@ class Funçoes(Validadores):
         for i in lista:
             self.listaCli.insert("", END, values=i)
         self.desconecta_bd()
+        self.limpa_cliente()
     def VerMes(self):
         self.listaCli.delete(*self.listaCli.get_children())
         self.conecta_bd()
@@ -130,6 +142,20 @@ class Funçoes(Validadores):
     def Validaentrada(self):
         self.vdhora=(self.root.register(self.ValidaHora),"%P")
         self.vdTele=(self.root.register(self.ValidaTele),"%P")
+    def Alteraagenda(self):
+
+        self.conecta_bd()
+        self.conn.execute('''UPDATE Agendas set NOME_CLIENTE=?,TELEFONE=?,DATA=?,HORA=? where COD=?''',(self.entrynome.get(),self.entrytele.get(),self.entrydata.get(),self.entryhora.get(),self.entry_cod.get()))
+        self.conn.commit()
+        self.desconecta_bd()
+        self.limpa_cliente()
+        self.Tarefas()
+    def limpa_cliente(self):
+        self.entry_cod.delete(0, END)
+        self.entrynome.delete(0, END)
+        self.entrytele.delete(0, END)
+        self.entrydata.delete(0, END)
+        self.entryhora.delete(0, END)
 class Aplicacao(Funçoes,Validadores):
     def __init__(self):
         self.root=root
@@ -144,7 +170,7 @@ class Aplicacao(Funçoes,Validadores):
         self.root.title('Agenda')
         self.root.configure(background='black')
         self.root.geometry('800x600')
-        self.root.resizable(False,False)
+        self.root.resizable(True,True)
     def Frame(self):
         self.Main=Frame(self.root,bg= 'white',highlightbackground='black')
         self.Main.place(relx= 0.01, rely=0.01, relwidth= 0.98, relheight=0.98)
@@ -215,5 +241,4 @@ class Aplicacao(Funçoes,Validadores):
         self.listaCli.configure(yscroll=self.scroolLista.set)
         self.scroolLista.place(relx=0.96, rely=0.001, relwidth=0.04, relheight=1)
         self.listaCli.bind("<Double-1>", self.OnDoubleClick)
-
 Aplicacao()
