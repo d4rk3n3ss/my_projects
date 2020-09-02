@@ -46,9 +46,15 @@ class Funçoes(Validadores):
         self.desconecta_bd()
     def Calendario(self):
         self.cal=Calendar(self.Main,fg='black',locale='pt_br')
-        self.cal.place(relx=0.66, rely=0.01)
+        self.cal.place(relx=0.75, rely=0.08)
         self.btsalva=Button(self.Main,text='Salvar',command=self.Salvar,bg='#00FF7F')
-        self.btsalva.place(relx=0.66, rely=0.33,relwidth=0.32)
+        self.btsalva.place(relx=0.75, rely=0.27,relwidth=0.15)
+        self.bt_fechar=Button(self.Main,text='Sair',command=self.Fechar,bg='red')
+        self.bt_fechar.place(relx=0.90, rely=0.27,relwidth=0.05)
+    def Fechar(self):
+        self.cal.destroy()
+        self.btsalva.destroy()
+        self.bt_fechar.destroy()
     def Agendar(self):
         self.conecta_bd()
         self.montaTabelas()
@@ -105,6 +111,7 @@ class Funçoes(Validadores):
         self.cal.destroy()
         self.entry_cod.destroy()
         self.bt_altera.destroy()
+        self.bt_fechar.destroy()
         self.Tarefas()
     def OnDoubleClick(self, event):
         self.limpa_cliente()
@@ -128,6 +135,7 @@ class Funçoes(Validadores):
         self.desconecta_bd()
         self.limpa_cliente()
     def VerMes(self):
+        self.Agendar()
         self.listaCli.delete(*self.listaCli.get_children())
         self.conecta_bd()
         meses = self.data_e_hora = strftime('/%m/%Y')
@@ -169,8 +177,9 @@ class Aplicacao(Funçoes,Validadores):
     def Tela(self):
         self.root.title('Agenda')
         self.root.configure(background='black')
-        self.root.geometry('800x600')
-        self.root.resizable(True,True)
+        self.root.geometry('1280x1024')
+        self.root.maxsize(width=1280,height=1024)
+        self.root.minsize(width=800,height=600)
     def Frame(self):
         self.Main=Frame(self.root,bg= 'white',highlightbackground='black')
         self.Main.place(relx= 0.01, rely=0.01, relwidth= 0.98, relheight=0.98)
