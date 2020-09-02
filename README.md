@@ -1,2 +1,2 @@
 # my_projects
-meus projetos
+Aprendendo Python com projetos pessoais. 
