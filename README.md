@@ -1,4 +1,4 @@
-# !! First functional program :) !!!
+# !! My First functional program :) !!!
 In this project I tried to deepen my knowledge in python to create an application that facilitates date management.
 
 To execute it is necessary to have Lib
