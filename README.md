@@ -15,12 +15,12 @@ Explaining the interface
 
 
 
-First Boot
+First Button
 
 Register with name, phone, email and the date itself
 
 
-Second Botao:
+Second Button:
 
 Displays records with dates on the current day
 
